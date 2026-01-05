@@ -1,24 +1,8 @@
-namespace Fishy.Core
+public enum SpeciesId
 {
-    public enum SpeciesId
-    {
-        Algae,
-        Plankton,
-        Veg,
-        Meat,
-        PlayerFish
-    }
-
-    public enum FoodType
-    {
-        Plant,
-        Plankton,
-        Fish
-    }
-
-    public enum ThreatType
-    {
-        Predator,
-        Player
-    }
+    Algae,
+    Plankton,
+    VegFish,     
+    MeatFish,    
+    PlayerFish
 }
