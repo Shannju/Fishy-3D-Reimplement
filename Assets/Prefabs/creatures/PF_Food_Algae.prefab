@@ -8,9 +8,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 458566937252815094, guid: 6f6ffc3b772550d43bb3f214cf2d0682, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1050425094840936308, guid: 6f6ffc3b772550d43bb3f214cf2d0682, type: 3}
+      propertyPath: m_Radius
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 4428959674904707146, guid: 6f6ffc3b772550d43bb3f214cf2d0682, type: 3}
       propertyPath: m_Name
-      value: PF_Base_Food
+      value: PF_Food_Algae
       objectReference: {fileID: 0}
     - target: {fileID: 6385120128080359905, guid: 6f6ffc3b772550d43bb3f214cf2d0682, type: 3}
       propertyPath: m_LocalPosition.x
