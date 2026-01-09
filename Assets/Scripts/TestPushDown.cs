@@ -3,8 +3,8 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class TestPushDown : MonoBehaviour
 {
-    public float downForce = 1.5f;   // 力的大小，越小越“轻”
-    public ForceMode forceMode = ForceMode.Impulse;
+    public float downForce = 1.5f;        // 向下持续力的大小（Acceleration模式）
+    public float upImpulse = 5.0f;         // 向上冲量的大小（Impulse模式）
 
     Rigidbody rb;
 
@@ -15,9 +15,14 @@ public class TestPushDown : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Z))
+        if (Input.GetKey(KeyCode.Z))
         {
-            rb.AddForce(Vector3.down * downForce, forceMode);
+            rb.AddForce(Vector3.down * downForce, ForceMode.Acceleration);
+        }
+        if (Input.GetKeyUp(KeyCode.Z))
+        {
+            // 松开时给冲量
+            rb.AddForce(Vector3.up * upImpulse, ForceMode.Impulse);
         }
     }
 }
