@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Algae : LivingEntity, IEatable
+public class Algae : SizeableEntity, IEatable
 {
     [Header("Food Units")]
     [Tooltip("这坨藻一共有几口（单位口数）")]
@@ -10,7 +10,7 @@ public class Algae : LivingEntity, IEatable
     [Tooltip("缩放与剩余口数关联（根据剩余口数设置档位）")]
     [SerializeField] private bool scaleWithUnits = true;
 
-    [Header("Regeneration")]
+    [Header("Regeneration")]    
     [Tooltip("恢复到 totalUnits 所需的时间（秒）")]
     [SerializeField] private float regenerationTime = 5f;
 
@@ -41,7 +41,7 @@ public class Algae : LivingEntity, IEatable
 
     protected override void Start()
     {
-        base.Start(); // 先让 LivingEntity 应用初始档位缩放
+        base.Start(); // 先让 SizeableEntity 应用初始档位缩放
         UpdateVisual();
         
         // 如果初始状态不是满的，开始恢复

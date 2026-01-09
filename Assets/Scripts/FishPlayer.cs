@@ -8,74 +8,9 @@ using UnityEngine.InputSystem;
 /// 玩家控制的鱼：
 /// X：张嘴/咬
 /// </summary>
-public class FishPlayer : LivingEntity
+public class FishPlayer : FishBase
 {
-    [Header("Bite -> Grow")]
-    [Tooltip("吃了多少口以后长大一次")]
-    [SerializeField] protected int bitesToGrow = 5;
-    [Tooltip("当前累计吃了多少口（到阈值会清零）")]
-    protected int bitesAccumulated = 0;
-
-    [Header("Refs")]
-    [SerializeField] protected MouthSensor mouth;
-    [SerializeField] protected Rigidbody rb;
-
-    [Header("Audio")]
-    [SerializeField] protected bool enableAudio = true;
-    [SerializeField] protected AudioSource audioSource;
-    [SerializeField] protected AudioClip mouthOpenSfx;
-    [SerializeField] protected AudioClip mouthCloseSfx;
-
-    [Header("Bite Settings")]
-    [SerializeField] protected float biteCooldown = 0.15f;
-    protected float _nextBiteTime;
-
-    // -----------------------------
-    // Awake
-    // -----------------------------
-    protected override void Awake()
-    {
-        base.Awake();
-
-        if (mouth == null) mouth = GetComponent<MouthSensor>();
-        if (audioSource == null) audioSource = GetComponent<AudioSource>();
-        if (rb == null) rb = GetComponent<Rigidbody>();
-
-        enableAudio = true;
-    }
-
-    // -----------------------------
-    // Bite/Grow (保留)
-    // -----------------------------
-    public void OpenMouth()
-    {
-        if (Time.time < _nextBiteTime)
-        {
-            Debug.Log($"[FishPlayer] 冷却中，还需等待 {_nextBiteTime - Time.time:F2} 秒");
-            return;
-        }
-
-        if (enableAudio) PlayMouthOpenSound();
-
-        TryBiteOnce();
-        _nextBiteTime = Time.time + biteCooldown;
-    }
-
-    public void CloseMouth()
-    {
-        if (enableAudio) PlayMouthCloseSound();
-    }
-
-    public bool TryBite()
-    {
-        if (Time.time < _nextBiteTime) return false;
-
-        bool success = TryBiteOnce();
-        if (success) _nextBiteTime = Time.time + biteCooldown;
-        return success;
-    }
-
-    protected virtual bool TryBiteOnce()
+    protected override bool TryBiteOnce()
     {
         if (mouth == null)
         {
@@ -99,46 +34,12 @@ public class FishPlayer : LivingEntity
         return eaten;
     }
 
-    public bool BiteOnce(IEatable target)
-    {
-        if (target == null || target.IsDepleted) return false;
-
-        bool eaten = target.ConsumeOneUnit();
-        if (!eaten) return false;
-
-        bitesAccumulated += 1;
-
-        if (bitesAccumulated >= bitesToGrow)
-        {
-            GrowOnce();
-            bitesAccumulated = 0;
-        }
-
-        return true;
-    }
-
-    private void GrowOnce()
+    protected override void GrowOnce()
     {
         int newTier = CurrentSizeTier + 1;
         ApplySizeTier(newTier);
         Debug.Log($"[FishPlayer] 长大到第 {newTier} 档！");
     }
-
-    protected void PlayMouthOpenSound()
-    {
-        if (audioSource != null && mouthOpenSfx != null)
-            audioSource.PlayOneShot(mouthOpenSfx);
-    }
-
-    protected void PlayMouthCloseSound()
-    {
-        if (audioSource != null && mouthCloseSfx != null)
-            audioSource.PlayOneShot(mouthCloseSfx);
-    }
-
-
-
-
 
     // -----------------------------
     // Update (Input)
@@ -175,5 +76,4 @@ public class FishPlayer : LivingEntity
         return Input.GetKeyUp(KeyCode.X);
 #endif
     }
-
 }
