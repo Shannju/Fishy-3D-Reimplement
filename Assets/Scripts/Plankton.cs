@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 
 public enum PlanktonColor
 {
@@ -16,430 +15,244 @@ public enum PlanktonState
 
 public class Plankton : LivingEntity, IEatable
 {
-    [Header("Food")]
+    // --- IEatable 接口实现 ---
     private const int totalUnits = 1;
     private int _unitsRemaining = 1;
 
     public int UnitsRemaining => _unitsRemaining;
     public bool IsDepleted => _unitsRemaining <= 0;
 
+    // --- 原有属性保留 ---
     [Header("Color")]
-    [Tooltip("浮游生物的颜色，相同颜色的会聚在一起")]
     [SerializeField] private PlanktonColor color = PlanktonColor.Blue;
-    
     public PlanktonColor Color => color;
 
-    [Header("Movement")]
-    [Tooltip("移动速度")]
-    [SerializeField] private float moveSpeed = 1.5f;
-    [Tooltip("初始速度（刚开始时较慢）")]
-    [SerializeField] private float initialSpeed = 0.5f;
-    [Tooltip("速度加速时间（秒）")]
-    [SerializeField] private float speedUpTime = 3f;
-    [Tooltip("转向速度（度/秒）")]
-    [SerializeField] private float rotationSpeed = 120f;
-    [Tooltip("随机游动速度")]
-    [SerializeField] private float wanderSpeed = 0.5f;
-    [Tooltip("推动力强度")]
-    [SerializeField] private float forceMultiplier = 5f;
+    // --- 抄自 PreyFish 的核心参数 ---
+    [Header("Movement (Copied from PreyFish)")]
+    [SerializeField] private float _normalSpeed = 1.5f;
+    [SerializeField] private float _fleeSpeed = 3f;
+    [SerializeField] private float _turnSpeed = 120f;
+    [SerializeField] private float _smoothTime = 0.5f; // 速度平滑时间
+    
+    [Header("Flocking (Copied from PreyFish)")]
+    [SerializeField] private float _neighborRadius = 10f;
+    [SerializeField] private float _separationDistance = 0.3f;
+    [SerializeField] private float _separationWeight = 2.0f;
+    [SerializeField] private float _alignmentWeight = 1.0f;
+    [SerializeField] private float _cohesionWeight = 0.8f;
+    [SerializeField] private float _fleeDistance = 6f;
 
-    [Header("Behavior")]
-    [Tooltip("聚集检测半径")]
-    [SerializeField] private float gatheringRadius = 8f;
-    [Tooltip("聚集力的强度")]
-    [SerializeField] private float gatheringForce = 4f;
-    [Tooltip("分离距离（避免太挤）")]
-    [SerializeField] private float separationDistance = 1f;
-    [Tooltip("分离力的强度")]
-    [SerializeField] private float separationForce = 3f;
-    [Tooltip("逃窜检测半径")]
-    [SerializeField] private float fleeRadius = 8f;
-    [Tooltip("逃窜力的强度")]
-    [SerializeField] private float fleeForce = 5f;
-    [Tooltip("人少区域的检测半径")]
-    [SerializeField] private float emptySpaceRadius = 3f;
+    // --- 内部变量 ---
+    private Vector3 _currentVelocity;
+    private Vector3 _smoothedVelocity;
+    private Vector3 _velocityRef;
+    private Transform _threatTarget;
+    private PlanktonState _currentState = PlanktonState.Gathering;
 
-    [Header("Obstacle Avoidance")]
-    [Tooltip("前方检测距离")]
-    [SerializeField] private float lookAheadDistance = 2f;
-    [Tooltip("检测射线数量")]
-    [SerializeField] private int rayCount = 5;
-    [Tooltip("射线角度范围（度）")]
-    [SerializeField] private float rayAngle = 60f;
-    [Tooltip("障碍物检测层")]
-    [SerializeField] private LayerMask obstacleLayer = ~0; // 检测所有层
-
-    [Header("Stuck Detection")]
-    [Tooltip("卡住检测时间（秒）")]
-    [SerializeField] private float stuckCheckInterval = 2f;
-    [Tooltip("卡住判断的最小移动距离")]
-    [SerializeField] private float stuckThreshold = 0.5f;
-    [Tooltip("卡住时转向角度（度）")]
-    [SerializeField] private float stuckTurnAngle = 150f;
-
-    private Rigidbody rb;
-    private Renderer meshRenderer;
-    private PlanktonState currentState = PlanktonState.Gathering;
-    private Vector3 lastPosition;
-    private float lastStuckCheckTime;
-    private Vector3 wanderDirection;
-    private float wanderChangeTime;
-    private float spawnTime;
-    private float currentEffectiveSpeed;
-
-    // 颜色对应的材质颜色
-    private static readonly Dictionary<PlanktonColor, UnityEngine.Color> ColorMap = new Dictionary<PlanktonColor, UnityEngine.Color>
-    {
-        { PlanktonColor.Blue, UnityEngine.Color.blue },
-        { PlanktonColor.Purple, new UnityEngine.Color(0.5f, 0f, 0.5f) }
-    };
+    // 关键优化：使用静态列表代替每帧的 OverlapSphere
+    private static List<Plankton> _allPlanktons = new List<Plankton>();
 
     protected override void Awake()
     {
         base.Awake();
-        
-        rb = GetComponent<Rigidbody>();
-        if (rb == null)
-        {
-            rb = gameObject.AddComponent<Rigidbody>();
-            rb.useGravity = false;
-            rb.linearDamping = 2f;
-            rb.angularDamping = 5f;
-        }
+        // 如果有Rigidbody，设置为Kinematic以防干扰手动位移
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null) rb.isKinematic = true;
 
-        meshRenderer = GetComponent<Renderer>();
-        if (meshRenderer != null && meshRenderer.material != null)
-        {
-            meshRenderer.material.color = ColorMap[color];
-        }
-
-        lastPosition = transform.position;
-        lastStuckCheckTime = Time.time;
-        wanderChangeTime = Time.time;
-        spawnTime = Time.time;
-        currentEffectiveSpeed = initialSpeed;
-        wanderDirection = Random.insideUnitSphere;
-        wanderDirection.y = 0; // 保持水平
-        wanderDirection.Normalize();
+        // 初始化材质颜色
+        Renderer meshRenderer = GetComponent<Renderer>();
+        if (meshRenderer != null)
+            meshRenderer.material.color = (color == PlanktonColor.Blue) ? UnityEngine.Color.blue : new UnityEngine.Color(0.5f, 0f, 0.5f);
     }
 
     protected override void Start()
     {
         base.Start();
+        _allPlanktons.Add(this);
+        _currentVelocity = transform.forward * _normalSpeed;
+        _smoothedVelocity = _currentVelocity;
+    }
+
+    private void OnDestroy()
+    {
+        _allPlanktons.Remove(this);
     }
 
     private void Update()
     {
-        if (!IsAlive || IsDepleted) return;
+        if (!IsAlive) return;
 
-        UpdateEffectiveSpeed();
-        UpdateState();
-        CheckIfStuck();
-    }
+        CheckForThreats();
 
-    private void FixedUpdate()
-    {
-        if (!IsAlive || IsDepleted) return;
-
-        UpdateMovement();
-    }
-
-    private void UpdateEffectiveSpeed()
-    {
-        // 从初始速度慢慢加速到正常速度
-        float timeSinceSpawn = Time.time - spawnTime;
-        if (timeSinceSpawn < speedUpTime)
-        {
-            float progress = timeSinceSpawn / speedUpTime;
-            currentEffectiveSpeed = Mathf.Lerp(initialSpeed, moveSpeed, progress);
-        }
+        if (_currentState == PlanktonState.Fleeing)
+            UpdateFleeing();
         else
-        {
-            currentEffectiveSpeed = moveSpeed;
-        }
+            UpdateSchooling();
+
+        ApplyMovement();
     }
 
-    private void UpdateState()
+    // --- 核心逻辑 1：威胁检测 (改为类似 PreyFish 的逻辑) ---
+    private void CheckForThreats()
     {
-        // 检查附近是否有捕食者
-        FishBase nearestPredator = FindNearestPredator();
-        if (nearestPredator != null && Vector3.Distance(transform.position, nearestPredator.transform.position) < fleeRadius)
-        {
-            currentState = PlanktonState.Fleeing;
-        }
+        // 简单处理：你可以从外部传递威胁，或者这里保留你的 FindNearestPredator
+        // 这里的逻辑参考 PreyFish，根据距离切换状态
+        _threatTarget = FindNearestPredatorTransform(); // 沿用你原来的检测逻辑
+
+        if (_threatTarget != null && Vector3.Distance(transform.position, _threatTarget.position) < _fleeDistance)
+            _currentState = PlanktonState.Fleeing;
         else
-        {
-            currentState = PlanktonState.Gathering;
-        }
+            _currentState = PlanktonState.Gathering;
     }
 
-    private void UpdateMovement()
+    // --- 核心逻辑 2：三大定律 (使用静态列表，大幅提升性能) ---
+    private void UpdateSchooling()
     {
-        Vector3 steeringForce = Vector3.zero;
+        Vector3 separation = Vector3.zero;
+        Vector3 alignment = Vector3.zero;
+        Vector3 cohesion = Vector3.zero;
+        Vector3 avgPos = Vector3.zero;
+        int count = 0;
 
-        if (currentState == PlanktonState.Fleeing)
+        foreach (Plankton other in _allPlanktons)
         {
-            steeringForce += CalculateFleeForce();
-        }
-        else // Gathering
-        {
-            steeringForce += CalculateGatheringForce();
-            steeringForce += CalculateSeparationForce();
-            steeringForce += CalculateEmptySpaceForce();
-            steeringForce += CalculateWanderForce();
-        }
+            if (other == this || other.Color != this.color || !other.IsAlive) continue;
 
-        // 避障
-        Vector3 avoidanceForce = CalculateObstacleAvoidance();
-        if (avoidanceForce.magnitude > 0.1f)
-        {
-            steeringForce = avoidanceForce; // 避障优先
-        }
-
-        // 应用转向
-        if (steeringForce.magnitude > 0.1f)
-        {
-            Vector3 targetDirection = steeringForce.normalized;
-            Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
-        }
-
-        // 使用 Rigidbody 的 AddForce 来驱动运动
-        Vector3 moveDirection = transform.forward;
-        float speed = currentState == PlanktonState.Fleeing ? currentEffectiveSpeed * 1.5f : currentEffectiveSpeed;
-        
-        // 计算目标速度
-        Vector3 targetVelocity = moveDirection * speed;
-        
-        // 计算需要的力来达到目标速度
-        Vector3 velocityDifference = targetVelocity - rb.linearVelocity;
-        Vector3 force = velocityDifference * forceMultiplier;
-        
-        // 限制力的最大强度，避免突然加速
-        if (force.magnitude > forceMultiplier * speed)
-        {
-            force = force.normalized * forceMultiplier * speed;
-        }
-        
-        rb.AddForce(force, ForceMode.Force);
-    }
-
-    private Vector3 CalculateGatheringForce()
-    {
-        Vector3 force = Vector3.zero;
-        Collider[] nearby = Physics.OverlapSphere(transform.position, gatheringRadius);
-
-        int sameColorCount = 0;
-        Vector3 centerOfMass = Vector3.zero;
-
-        foreach (var col in nearby)
-        {
-            Plankton other = col.GetComponent<Plankton>();
-            if (other != null && other != this && other.Color == this.color && other.IsAlive)
+            float dist = Vector3.Distance(transform.position, other.transform.position);
+            if (dist < _neighborRadius)
             {
-                centerOfMass += other.transform.position;
-                sameColorCount++;
+                // 分离 - 在整个邻域范围内都起作用，避免突然推拉
+                Vector3 diff = transform.position - other.transform.position;
+                // 距离越近，分离力越强；距离越远，分离力越弱
+                float separationStrength = Mathf.Max(0, 1f - (dist / _neighborRadius));
+                separation += diff.normalized * separationStrength;
+
+                // 对齐
+                alignment += other._smoothedVelocity.normalized;
+                // 内聚
+                avgPos += other.transform.position;
+                count++;
             }
         }
 
-        if (sameColorCount > 0)
+        Vector3 targetVelocity = transform.forward; // 默认向前
+        if (count > 0)
         {
-            centerOfMass /= sameColorCount;
-            Vector3 directionToCenter = (centerOfMass - transform.position);
-            float distance = directionToCenter.magnitude;
-            
-            // 如果距离较远，增加聚集力，避免掉队
-            float distanceFactor = Mathf.Clamp01(distance / gatheringRadius);
-            float adjustedForce = gatheringForce * (1f + distanceFactor * 2f);
-            
-            directionToCenter.Normalize();
-            force = directionToCenter * adjustedForce;
+            alignment /= count;
+            avgPos /= count;
+            cohesion = (avgPos - transform.position).normalized;
+
+            targetVelocity = (separation * _separationWeight + 
+                             alignment * _alignmentWeight + 
+                             cohesion * _cohesionWeight).normalized;
         }
 
-        return force;
+        targetVelocity.y = 0; // 强制 XZ 平面
+        _currentVelocity = targetVelocity * _normalSpeed;
     }
 
-    private Vector3 CalculateSeparationForce()
+    private void UpdateFleeing()
     {
-        Vector3 force = Vector3.zero;
-        Collider[] nearby = Physics.OverlapSphere(transform.position, separationDistance);
-
-        foreach (var col in nearby)
-        {
-            Plankton other = col.GetComponent<Plankton>();
-            if (other != null && other != this && other.Color == this.color && other.IsAlive)
-            {
-                Vector3 directionAway = (transform.position - other.transform.position);
-                float distance = directionAway.magnitude;
-                if (distance > 0)
-                {
-                    directionAway.Normalize();
-                    force += directionAway / distance * separationForce;
-                }
-            }
-        }
-
-        return force;
+        if (_threatTarget == null) return;
+        Vector3 fleeDir = (transform.position - _threatTarget.position).normalized;
+        fleeDir.y = 0;
+        _currentVelocity = fleeDir * _fleeSpeed;
     }
 
-    private Vector3 CalculateEmptySpaceForce()
+    // --- 核心逻辑 3：丝滑移动 (抄袭重点) ---
+    private void ApplyMovement()
     {
-        Vector3 force = Vector3.zero;
-        Collider[] nearby = Physics.OverlapSphere(transform.position, emptySpaceRadius);
+        // 1. 速度平滑 (解决抖动问题的关键)
+        _smoothedVelocity = Vector3.SmoothDamp(
+            _smoothedVelocity, 
+            _currentVelocity, 
+            ref _velocityRef, 
+            _smoothTime
+        );
 
-        int nearbyCount = nearby.Count(col =>
+        // 2. 坐标位移
+        transform.position += _smoothedVelocity * Time.deltaTime;
+
+        // 3. 根据状态调整转向速度
+        if (_smoothedVelocity.sqrMagnitude > 0.01f)
         {
-            Plankton p = col.GetComponent<Plankton>();
-            return p != null && p != this && p.IsAlive;
-        });
-
-        // 如果附近有很多其他浮游生物，往人少的地方游
-        if (nearbyCount > 5)
-        {
-            // 随机选择一个方向，远离人群
-            Vector3 randomDirection = Random.insideUnitSphere;
-            randomDirection.y = 0;
-            randomDirection.Normalize();
-            force = randomDirection * 1f;
-        }
-
-        return force;
-    }
-
-    private Vector3 CalculateWanderForce()
-    {
-        // 定期改变漫游方向
-        if (Time.time - wanderChangeTime > Random.Range(2f, 5f))
-        {
-            wanderDirection = Random.insideUnitSphere;
-            wanderDirection.y = 0;
-            wanderDirection.Normalize();
-            wanderChangeTime = Time.time;
-        }
-
-        return wanderDirection * wanderSpeed;
-    }
-
-    private Vector3 CalculateFleeForce()
-    {
-        Vector3 force = Vector3.zero;
-        FishBase predator = FindNearestPredator();
-
-        if (predator != null)
-        {
-            Vector3 directionAway = (transform.position - predator.transform.position).normalized;
-            force = directionAway * fleeForce;
-        }
-
-        return force;
-    }
-
-    private FishBase FindNearestPredator()
-    {
-        FishBase nearest = null;
-        float nearestDistance = float.MaxValue;
-
-        Collider[] nearby = Physics.OverlapSphere(transform.position, fleeRadius);
-        foreach (var col in nearby)
-        {
-            FishBase predator = col.GetComponent<FishBase>();
-            if (predator != null && predator.IsAlive)
-            {
-                float distance = Vector3.Distance(transform.position, predator.transform.position);
-                if (distance < nearestDistance)
-                {
-                    nearestDistance = distance;
-                    nearest = predator;
-                }
-            }
-        }
-
-        return nearest;
-    }
-
-    private Vector3 CalculateObstacleAvoidance()
-    {
-        Vector3 avoidanceForce = Vector3.zero;
-        float minDistance = float.MaxValue;
-        Vector3 bestDirection = transform.forward;
-
-        // 发射多条射线检测前方障碍物
-        for (int i = 0; i < rayCount; i++)
-        {
-            float angle = rayCount > 1 ? (i / (float)(rayCount - 1) - 0.5f) * rayAngle : 0f;
-            Quaternion rotation = Quaternion.Euler(0, angle, 0);
-            Vector3 direction = rotation * transform.forward;
-
-            RaycastHit hit;
-            if (Physics.Raycast(transform.position, direction, out hit, lookAheadDistance, obstacleLayer))
-            {
-                float distance = hit.distance;
-                if (distance < minDistance)
-                {
-                    minDistance = distance;
-                    // 计算避开方向
-                    bestDirection = Vector3.Reflect(direction, hit.normal).normalized;
-                }
-            }
-        }
-
-        if (minDistance < lookAheadDistance)
-        {
-            avoidanceForce = bestDirection * (1f - minDistance / lookAheadDistance) * fleeForce;
-        }
-
-        return avoidanceForce;
-    }
-
-    private void CheckIfStuck()
-    {
-        if (Time.time - lastStuckCheckTime >= stuckCheckInterval)
-        {
-            float distanceMoved = Vector3.Distance(transform.position, lastPosition);
-            
-            if (distanceMoved < stuckThreshold)
-            {
-                // 卡住了，随机转向
-                float randomAngle = Random.Range(-stuckTurnAngle, stuckTurnAngle);
-                Quaternion turnRotation = Quaternion.Euler(0, randomAngle, 0);
-                transform.rotation = turnRotation * transform.rotation;
-                
-                // 重置漫游方向
-                wanderDirection = transform.forward;
-                wanderChangeTime = Time.time;
-            }
-
-            lastPosition = transform.position;
-            lastStuckCheckTime = Time.time;
+            Quaternion targetRot = Quaternion.LookRotation(_smoothedVelocity);
+            // 根据状态调整转向速度：gathering时很慢，fleeing时快
+            float turnSpeed = (_currentState == PlanktonState.Fleeing) ? _turnSpeed * 2f : _turnSpeed * 0.2f;
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                targetRot,
+                turnSpeed * Time.deltaTime
+            );
         }
     }
 
-    // IEatable 接口实现
+    // --- 捕食扩散逻辑 (抄自 PreyFish) ---
     public bool ConsumeOneUnit()
     {
         if (IsDepleted) return false;
 
         _unitsRemaining = 0;
+        NotifyNearbyPlanktons(this.transform); // 被吃时惊动队友
         Die();
         return true;
     }
 
-    public override void Die()
+    private void NotifyNearbyPlanktons(Transform threat)
     {
-        base.Die();
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        // 绘制前方检测射线
-        Gizmos.color = UnityEngine.Color.white;
-        for (int i = 0; i < rayCount; i++)
+        foreach (Plankton other in _allPlanktons)
         {
-            float angle = rayCount > 1 ? (i / (float)(rayCount - 1) - 0.5f) * rayAngle : 0f;
-            Quaternion rotation = Quaternion.Euler(0, angle, 0);
-            Vector3 direction = rotation * transform.forward;
-            Gizmos.DrawRay(transform.position, direction * lookAheadDistance);
+            if (other == this || !other.IsAlive) continue;
+            if (Vector3.Distance(transform.position, other.transform.position) < _neighborRadius * 1.5f)
+            {
+                other._threatTarget = threat;
+                other._currentState = PlanktonState.Fleeing;
+            }
         }
     }
-}
 
+    // 辅助：检测附近的捕食者
+    private Transform FindNearestPredatorTransform()
+    {
+        Transform nearest = null;
+        float nearestDistance = float.MaxValue;
+
+        // 检测附近的威胁（鱼类或玩家）
+        Collider[] nearby = Physics.OverlapSphere(transform.position, _fleeDistance);
+        foreach (var col in nearby)
+        {
+            Transform potentialThreat = null;
+
+            // 检测FishBase类型的威胁（包括父对象）
+            FishBase predator = col.GetComponent<FishBase>();
+            if (predator == null)
+            {
+                // 如果当前对象没有，检查父对象
+                predator = col.GetComponentInParent<FishBase>();
+            }
+            if (predator != null && predator.IsAlive)
+            {
+                potentialThreat = predator.transform;
+                // 调试：检测到FishBase威胁
+                Debug.Log($"[{gameObject.name}] 检测到FishBase威胁: {predator.GetType().Name}, 距离: {Vector3.Distance(transform.position, potentialThreat.position):F2}");
+            }
+            if (potentialThreat != null)
+            {
+                float distance = Vector3.Distance(transform.position, potentialThreat.position);
+                if (distance < nearestDistance)
+                {
+                    nearestDistance = distance;
+                    nearest = potentialThreat;
+                }
+            }
+        }
+
+        // 调试：最终检测结果
+        if (nearest != null)
+        {
+            Debug.Log($"[{gameObject.name}] 找到最近威胁: {nearest.name}, 距离: {nearestDistance:F2}");
+        }
+
+        return nearest;
+    }
+}
