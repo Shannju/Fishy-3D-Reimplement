@@ -117,6 +117,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PF_Fish_Player
       objectReference: {fileID: 0}
+    - target: {fileID: 3058634232643775215, guid: db15fa452aa85b849b5b1d2c54aac653, type: 3}
+      propertyPath: m_Constraints
+      value: 84
+      objectReference: {fileID: 0}
     - target: {fileID: 4438800801260150858, guid: db15fa452aa85b849b5b1d2c54aac653, type: 3}
       propertyPath: m_ProvidesContacts
       value: 0

@@ -526,6 +526,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Species: 4
+  bodyCollider: {fileID: 0}
   sizeTiers: 3
   currentSizeTier: 1
   bitesToGrow: 1
@@ -536,6 +537,9 @@ MonoBehaviour:
   mouthOpenSfx: {fileID: 8300000, guid: 5de4a85901c78ab46a21a13bd04f9ab5, type: 3}
   mouthCloseSfx: {fileID: 8300000, guid: 05b56e866f0a07549ab2dcb5f3071111, type: 3}
   biteCooldown: 0.15
+  shrinkTimeThreshold: 3
+  shrinkSfx: {fileID: 0}
+  shrinkCooldown: 1
 --- !u!114 &4520445102759458448
 MonoBehaviour:
   m_ObjectHideFlags: 0
