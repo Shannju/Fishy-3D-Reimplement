@@ -5,6 +5,9 @@ public abstract class LivingEntity : MonoBehaviour
     [Header("Identity")]
     [SerializeField] private SpeciesId Species;
 
+    protected SpeciesId SpeciesValue => Species; // 受保护的getter
+    protected void SetSpecies(SpeciesId species) => Species = species; // 受保护的setter
+
     public bool IsAlive { get; private set; } = true;
 
     protected virtual void Awake()

@@ -98,16 +98,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c268a9e5018124439360fbfa7213faa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Species: 0
+  sizeTiers: 3
+  currentSizeTier: 1
+  bitesToGrow: 5
+  mouth: {fileID: 0}
+  rb: {fileID: 0}
+  enableAudio: 1
+  audioSource: {fileID: 0}
+  mouthOpenSfx: {fileID: 0}
+  mouthCloseSfx: {fileID: 0}
+  biteCooldown: 0.15
   _moveSpeed: 2
   _turnSpeed: 90
   _straightMoveTime: 3
   _randomTurnAngle: 45
-  _detectionRadius: 8
-  _eatingRadius: 1.5
+  _senseCollider: {fileID: 0}
   _algaeLayer:
     serializedVersion: 2
     m_Bits: 4294967295
-  _feedingCooldown: 1
   _linearDamping: 1
   _angularDamping: 2
 --- !u!1 &6885750588819679664
@@ -228,6 +237,14 @@ PrefabInstance:
       propertyPath: m_Radius
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2488038134316315339, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: rb
+      value: 
+      objectReference: {fileID: 8030806021638347007}
+    - target: {fileID: 2488038134316315339, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: mouth
+      value: 
+      objectReference: {fileID: 2808835769678463835}
     - target: {fileID: 7276608808218646938, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
       propertyPath: m_Name
       value: PF_Fish_GrassFish
@@ -248,5 +265,10 @@ Transform:
 --- !u!4 &6993313000458758714 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7491586673200024341, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+  m_PrefabInstance: {fileID: 502797305281536303}
+  m_PrefabAsset: {fileID: 0}
+--- !u!54 &8030806021638347007 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 7604729271697160656, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
   m_PrefabInstance: {fileID: 502797305281536303}
   m_PrefabAsset: {fileID: 0}

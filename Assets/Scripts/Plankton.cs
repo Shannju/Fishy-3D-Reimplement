@@ -33,7 +33,7 @@ public class Plankton : LivingEntity, IEatable
     [SerializeField] private float _fleeSpeed = 3f;
     [SerializeField] private float _turnSpeed = 120f;
     [SerializeField] private float _smoothTime = 0.5f; // 速度平滑时间
-    
+
     [Header("Flocking (Copied from PreyFish)")]
     [SerializeField] private float _neighborRadius = 10f;
     [SerializeField] private float _separationDistance = 0.2f;
@@ -117,7 +117,7 @@ public class Plankton : LivingEntity, IEatable
             UpdateSchooling();
 
         ApplyMovement();
-    }
+        }
 
     // --- 核心逻辑 1：威胁检测 (改为类似 PreyFish 的逻辑) ---
     private void CheckForThreats()
@@ -130,11 +130,11 @@ public class Plankton : LivingEntity, IEatable
             _currentState = PlanktonState.Fleeing;
         else
             _currentState = PlanktonState.Gathering;
-    }
+        }
 
     // --- 核心逻辑 2：三大定律 (使用静态列表，大幅提升性能) ---
     private void UpdateSchooling()
-    {
+        {
         Vector3 separation = Vector3.zero;
         Vector3 alignment = Vector3.zero;
         Vector3 cohesion = Vector3.zero;
@@ -159,7 +159,7 @@ public class Plankton : LivingEntity, IEatable
                 // 内聚
                 avgPos += other.transform.position;
                 count++;
-            }
+    }
         }
 
         Vector3 targetVelocity = transform.forward; // 默认向前
@@ -179,7 +179,7 @@ public class Plankton : LivingEntity, IEatable
         // 障碍物避障
         Vector3 avoidanceVelocity = CalculateObstacleAvoidance();
         if (avoidanceVelocity != Vector3.zero)
-        {
+    {
             // 检测到障碍物时，大角度转向避开
             targetVelocity = avoidanceVelocity.normalized;
         }
@@ -193,7 +193,7 @@ public class Plankton : LivingEntity, IEatable
         Vector3 fleeDir = (transform.position - _threatTarget.position).normalized;
         fleeDir.y = 0;
         _currentVelocity = fleeDir * _fleeSpeed;
-    }
+                }
 
     // 障碍物避障
     private Vector3 CalculateObstacleAvoidance()
@@ -277,7 +277,7 @@ public class Plankton : LivingEntity, IEatable
                 // 限制最大角度差对应的扭矩
                 float maxTorque = turnSpeed;
                 float torque = Mathf.Clamp(angleDifference, -maxTorque, maxTorque);
-
+                
                 // 应用Y轴扭矩
                 rb.AddTorque(Vector3.up * torque, ForceMode.Force);
             }
