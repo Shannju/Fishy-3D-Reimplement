@@ -5,6 +5,10 @@ public abstract class LivingEntity : MonoBehaviour
     [Header("Identity")]
     [SerializeField] private SpeciesId Species;
 
+    [Header("Body Collider")]
+    [Tooltip("用于被吃检测的碰撞体")]
+    [SerializeField] protected Collider bodyCollider;
+
     protected SpeciesId SpeciesValue => Species; // 受保护的getter
     protected void SetSpecies(SpeciesId species) => Species = species; // 受保护的setter
 
@@ -12,6 +16,10 @@ public abstract class LivingEntity : MonoBehaviour
 
     protected virtual void Awake()
     {
+        if (bodyCollider == null)
+        {
+            bodyCollider = GetComponent<Collider>();
+        }
     }
 
     protected virtual void Start()

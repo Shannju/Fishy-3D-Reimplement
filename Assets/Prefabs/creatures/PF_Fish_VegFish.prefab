@@ -52,7 +52,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 3
+  m_Radius: 2
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &280793501722380153
 MonoBehaviour:
@@ -76,7 +76,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1558540106725617300, guid: 429a0db081a1560479a6f546e28bee5f, type: 3}
       propertyPath: m_Name
-      value: PF_Fish_GrassFish
+      value: PF_Fish_VegFish
       objectReference: {fileID: 0}
     - target: {fileID: 1789004561240526558, guid: 429a0db081a1560479a6f546e28bee5f, type: 3}
       propertyPath: m_Constraints
@@ -88,7 +88,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 6865d099b66f79a47b3ad5e07771cd1c, type: 2}
     - target: {fileID: 7046287130859282883, guid: 429a0db081a1560479a6f546e28bee5f, type: 3}
       propertyPath: m_Radius
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7046287130859282883, guid: 429a0db081a1560479a6f546e28bee5f, type: 3}
       propertyPath: m_IsTrigger
@@ -179,10 +179,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 7276608808218646938}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2eabf2402eca044abaa8264b3bc7eaf, type: 3}
+  m_Script: {fileID: 11500000, guid: ef417725c62957049bf406878631b49a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Species: 2
+  Species: 0
   sizeTiers: 3
   currentSizeTier: 1
   bitesToGrow: 5
@@ -198,11 +198,13 @@ MonoBehaviour:
   _straightMoveTime: 3
   _randomTurnAngle: 45
   _senseCollider: {fileID: 1810985500690084274}
+  _debugAlwaysActive: 0
+  _linearDamping: 1
+  _angularDamping: 2
   _algaeLayer:
     serializedVersion: 2
     m_Bits: 4294967295
-  _linearDamping: 1
-  _angularDamping: 2
+  _debugAlwaysFeeding: 0
 --- !u!4 &7491586673200024341 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1634182912120126491, guid: 429a0db081a1560479a6f546e28bee5f, type: 3}

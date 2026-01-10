@@ -24,6 +24,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PF_Food_Algae
       objectReference: {fileID: 0}
+    - target: {fileID: 6371567991318687015, guid: 6f6ffc3b772550d43bb3f214cf2d0682, type: 3}
+      propertyPath: m_Radius
+      value: 0.6
+      objectReference: {fileID: 0}
     - target: {fileID: 6385120128080359905, guid: 6f6ffc3b772550d43bb3f214cf2d0682, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

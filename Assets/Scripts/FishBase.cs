@@ -4,8 +4,11 @@ using UnityEngine;
 /// 鱼类基类：所有鱼的共同功能
 /// 包含咬/吃、成长系统等
 /// </summary>
-public abstract class FishBase : SizeableEntity
+public abstract class FishBase : SizeableEntity, IEatable
 {
+    [Header("Eatable")]
+    private bool _isDepleted = false;
+
     [Header("Bite -> Grow")]
     [Tooltip("吃了多少口以后长大一次")]
     [SerializeField] protected int bitesToGrow = 5;
@@ -130,6 +133,22 @@ public abstract class FishBase : SizeableEntity
     {
         if (audioSource != null && mouthCloseSfx != null)
             audioSource.PlayOneShot(mouthCloseSfx);
+    }
+
+    // -----------------------------
+    // IEatable Implementation
+    // -----------------------------
+    public int UnitsRemaining => _isDepleted ? 0 : 1;
+
+    public bool IsDepleted => _isDepleted;
+
+    public bool ConsumeOneUnit()
+    {
+        if (_isDepleted) return false;
+
+        _isDepleted = true;
+        Die();
+        return true;
     }
 }
 

@@ -284,6 +284,10 @@ PrefabInstance:
       propertyPath: Species
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 6873667426155990548, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: bitesToGrow
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 7276608808218646938, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
       propertyPath: m_Name
       value: PF_Fish_GrassFish
@@ -745,6 +749,144 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1307770874}
   m_SourcePrefab: {fileID: 100100000, guid: 58e8cfbd810a277499405c08e4223574, type: 3}
+--- !u!1001 &441840284
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.88
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1194524827030623949, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_Radius
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2488038134316315339, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: Species
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6873667426155990548, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: bitesToGrow
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7276608808218646938, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_Name
+      value: PF_Fish_GrassFish (4)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+--- !u!1001 &465518025
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.88
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1194524827030623949, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_Radius
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2488038134316315339, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: Species
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6873667426155990548, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: bitesToGrow
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7276608808218646938, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_Name
+      value: PF_Fish_GrassFish (2)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
 --- !u!1 &577433057
 GameObject:
   m_ObjectHideFlags: 0
@@ -1856,7 +1998,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1532809693
 Transform:
   m_ObjectHideFlags: 0
@@ -2277,6 +2419,75 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8cd3e6181f37be942a8f79ddb3369b2d, type: 3}
+--- !u!1001 &1847825975
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.88
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1194524827030623949, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_Radius
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2488038134316315339, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: Species
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6873667426155990548, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: bitesToGrow
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7276608808218646938, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_Name
+      value: PF_Fish_GrassFish (3)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
 --- !u!1 &1862393789
 GameObject:
   m_ObjectHideFlags: 0
@@ -2312,6 +2523,75 @@ Transform:
   - {fileID: 753514971}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1926878867
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.88
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 77096237170255921, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1194524827030623949, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_Radius
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2488038134316315339, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: Species
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6873667426155990548, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: bitesToGrow
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7276608808218646938, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
+      propertyPath: m_Name
+      value: PF_Fish_GrassFish (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 88715dd2b4b637e498ffdf0431e56098, type: 3}
 --- !u!4 &2032389439 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7820604349835149082, guid: 8cd3e6181f37be942a8f79ddb3369b2d, type: 3}
@@ -2422,11 +2702,76 @@ PrefabInstance:
       propertyPath: rb
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 8762982606137394849, guid: e7b4693e1a198ae4da3fa768b980cdb5, type: 3}
+      propertyPath: bitesToGrow
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e7b4693e1a198ae4da3fa768b980cdb5, type: 3}
+--- !u!1001 &5248573274968915677
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1756010197087865784, guid: 10919cab433c66c4bac1e4d8776a8a9f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2.95
+      objectReference: {fileID: 0}
+    - target: {fileID: 1756010197087865784, guid: 10919cab433c66c4bac1e4d8776a8a9f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1756010197087865784, guid: 10919cab433c66c4bac1e4d8776a8a9f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -2.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 1756010197087865784, guid: 10919cab433c66c4bac1e4d8776a8a9f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1756010197087865784, guid: 10919cab433c66c4bac1e4d8776a8a9f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1756010197087865784, guid: 10919cab433c66c4bac1e4d8776a8a9f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1756010197087865784, guid: 10919cab433c66c4bac1e4d8776a8a9f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1756010197087865784, guid: 10919cab433c66c4bac1e4d8776a8a9f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1756010197087865784, guid: 10919cab433c66c4bac1e4d8776a8a9f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1756010197087865784, guid: 10919cab433c66c4bac1e4d8776a8a9f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4706218875234630363, guid: 10919cab433c66c4bac1e4d8776a8a9f, type: 3}
+      propertyPath: m_Name
+      value: PF_Fish_MeatFish
+      objectReference: {fileID: 0}
+    - target: {fileID: 7505983598237789033, guid: 10919cab433c66c4bac1e4d8776a8a9f, type: 3}
+      propertyPath: currentSizeTier
+      value: 2
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 10919cab433c66c4bac1e4d8776a8a9f, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -2440,3 +2785,8 @@ SceneRoots:
   - {fileID: 136013399738878355}
   - {fileID: 2094158208}
   - {fileID: 92664166}
+  - {fileID: 1926878867}
+  - {fileID: 465518025}
+  - {fileID: 1847825975}
+  - {fileID: 441840284}
+  - {fileID: 5248573274968915677}
