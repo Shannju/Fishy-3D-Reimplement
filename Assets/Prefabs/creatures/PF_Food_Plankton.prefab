@@ -197,6 +197,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2340619090460694643, guid: 70c94547ea8031e4b820151438f99f20, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3430499459129438064}
+    - targetCorrespondingSourceObject: {fileID: 2340619090460694643, guid: 70c94547ea8031e4b820151438f99f20, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9004757889775834259}
   m_SourcePrefab: {fileID: 100100000, guid: 70c94547ea8031e4b820151438f99f20, type: 3}
 --- !u!1 &676117799232917169 stripped
 GameObject:
@@ -217,16 +220,53 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Species: 1
   color: 0
-  _normalSpeed: 1.5
-  _fleeSpeed: 3
-  _turnSpeed: 120
+  _normalSpeed: 3
+  _fleeSpeed: 4
+  _turnSpeed: 10
   _smoothTime: 0.5
-  _neighborRadius: 10
-  _separationDistance: 0.5
-  _separationWeight: 1.5
+  _neighborRadius: 3
+  _separationDistance: 1
+  _separationWeight: 1
   _alignmentWeight: 1
   _cohesionWeight: 1
   _fleeDistance: 6
+  _obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  _lookAheadDistance: 1
+  _rayCount: 5
+  _rayAngle: 60
+  _avoidanceForce: 1
+  _stuckCheckInterval: 3
+  _stuckThreshold: 0.1
+  _stuckTurnAngle: 120
+--- !u!54 &9004757889775834259
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 676117799232917169}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 84
+  m_CollisionDetection: 0
 --- !u!4 &8919365917988518442 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5971338990658186472, guid: 70c94547ea8031e4b820151438f99f20, type: 3}
