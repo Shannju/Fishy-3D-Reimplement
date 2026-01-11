@@ -76,15 +76,18 @@ public class Plankton : LivingEntity, IEatable
         if (rb != null)
         {
             rb.useGravity = false; // 禁用重力
-            rb.linearDamping = 1f; // 降低线性阻尼，允许更快响应
+            rb.linearDamping = 0.1f; // 很小的线性阻尼，让运动更平滑
             rb.angularDamping = 3f; // 降低角度阻尼，允许更快转向
             // 保持非Kinematic状态以支持物理力
         }
 
-        // 初始化材质颜色
+        // 初始化材质颜色和 shader
         Renderer meshRenderer = GetComponent<Renderer>();
         if (meshRenderer != null)
+        {
             meshRenderer.material.color = (color == PlanktonColor.Blue) ? UnityEngine.Color.blue : new UnityEngine.Color(0.5f, 0f, 0.5f);
+            meshRenderer.material.shader = Shader.Find("Custom/PlanktonSwim");
+        }
     }
 
     protected override void Start()
