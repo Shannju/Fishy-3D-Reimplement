@@ -6,7 +6,7 @@ Shader "Custom/FishSwim"
         _MainTex ("Texture", 2D) = "white" {}
         _SwimSpeed ("Swim Speed", Float) = 5.0
         _WaveFreq ("Wave Frequency", Float) = 2.0
-        _WaveAmp ("Wave Amplitude", Float) = 0.3
+        _WaveAmp ("Wave Amplitude", Float) = 0.1
         _LerpFactor ("Lerp Factor (Velocity Control)", Range(0, 1)) = 0.0
     }
     SubShader
@@ -52,12 +52,13 @@ Shader "Custom/FishSwim"
                 if (_LerpFactor > 0.001f)
                 {
                     // 计算波浪：基于时间 + 顶点在该物体坐标系下的 Z 轴位置
-                    // 我们增加一个小细节：(pos.z + 0.5) 是为了让鱼头(假设在正Z)摆动幅度小，鱼尾摆动大
-                    float wave = sin(_Time.y * _SwimSpeed + pos.z * _WaveFreq) * _WaveAmp * _LerpFactor;
+                    // 前半截保持不变，后半截延迟跟上
+                    float tailWeight = 1.0f - smoothstep(-0.5f, 0.5f, pos.z); // Z 值大的顶点（鱼头）权重为0，Z 值小的顶点（鱼尾）权重为1
+                    float wave = sin(_Time.y * _SwimSpeed + pos.z * _WaveFreq) * _WaveAmp * _LerpFactor * tailWeight;
 
-                    // 只有在 X 轴上发生偏移
-                    float3 distortedPos = pos;
-                    distortedPos.x += wave;
+                // 只有在 Z 轴上发生偏移
+                float3 distortedPos = pos;
+                distortedPos.z += wave;
 
                     // 基于 _LerpFactor 在原始形状和扭曲形状之间插值
                     finalPos = lerp(pos, distortedPos, _LerpFactor);
