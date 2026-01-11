@@ -5,6 +5,9 @@ public class CameraFollow : MonoBehaviour
     [Header("Target")]
     public Transform target;
 
+    // Public camera reference for size-based positioning
+    public Camera Camera => GetComponent<Camera>();
+
     [Header("Follow Settings")]
     public Vector3 offset = new Vector3(0f, 0f, 0f);
     public float smoothTime = 0.25f;

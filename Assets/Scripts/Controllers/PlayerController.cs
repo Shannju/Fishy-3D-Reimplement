@@ -50,9 +50,6 @@ public class PlayerController : MonoBehaviour
         // 确保碰撞检测模式为Continuous，避免高速穿透
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
-
-        // 冻结X和Z轴旋转，只允许Y轴旋转（鱼只能在XZ平面上转向）
-        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
     }
 
     private void Start()

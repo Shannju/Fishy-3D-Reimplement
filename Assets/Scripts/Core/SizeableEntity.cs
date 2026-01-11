@@ -10,7 +10,7 @@ public abstract class SizeableEntity : LivingEntity
     [Tooltip("总档位数（例如：3表示有3个档位）")]
     [SerializeField] private int sizeTiers = 3;
 
-    [Tooltip("当前档位（例如：3表示放大3倍，在Start时应用）")]
+    [Tooltip("当前档位（例如：3表示放大0.9倍，在Start时应用）")]
     [SerializeField] private int currentSizeTier = 1;
 
     public int CurrentSizeTier => currentSizeTier;
@@ -32,7 +32,7 @@ public abstract class SizeableEntity : LivingEntity
     }
 
     /// <summary>
-    /// 根据档位缩放物体（倍数缩放）
+    /// 根据档位缩放物体（0.3倍数缩放）
     /// </summary>
     public void ApplySizeTier(int tier)
     {
@@ -40,7 +40,7 @@ public abstract class SizeableEntity : LivingEntity
         if (tier > sizeTiers) tier = sizeTiers;
 
         currentSizeTier = tier;
-        transform.localScale = _baseScale * tier;
+        transform.localScale = _baseScale * (tier * 0.5f);
     }
 
     public int GetSizeTiers() => sizeTiers;

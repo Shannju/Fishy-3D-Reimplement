@@ -10,6 +10,9 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class FishPlayer : FishBase
 {
+    [Header("Camera Settings")]
+    [SerializeField] private CameraFollow cameraFollow;
+
     [Header("Shrink Settings")]
     [Tooltip("在脏水中泡多长时间开始缩小（秒）")]
     [SerializeField] private float shrinkTimeThreshold = 3f;
@@ -49,6 +52,7 @@ public class FishPlayer : FishBase
     {
         int newTier = CurrentSizeTier + 1;
         ApplySizeTier(newTier);
+        UpdateSizeBasedCamera();
         Debug.Log($"[FishPlayer] 长大到第 {newTier} 档！");
     }
 
@@ -62,6 +66,7 @@ public class FishPlayer : FishBase
 
         int newTier = CurrentSizeTier - 1;
         ApplySizeTier(newTier);
+        UpdateSizeBasedCamera();
 
         // 播放缩小音效
         if (enableAudio && audioSource != null && shrinkSfx != null)
@@ -70,6 +75,16 @@ public class FishPlayer : FishBase
         }
 
         Debug.Log($"[FishPlayer] 缩小到第 {newTier} 档！");
+    }
+
+    // -----------------------------
+    // Awake
+    // -----------------------------
+    protected override void Awake()
+    {
+        base.Awake();
+        // 初始化摄像机位置
+        UpdateSizeBasedCamera();
     }
 
     // -----------------------------
@@ -238,5 +253,27 @@ public class FishPlayer : FishBase
             // 可选：也可以设置位置到碰撞点前一点距离
             // 但这里简单地停止运动即可
         }
+    }
+
+    /// <summary>
+    /// 根据鱼的大小更新摄像机Z轴位置
+    /// 鱼大小从1到maxSize映射到相机Z轴从-5到-10
+    /// </summary>
+    private void UpdateSizeBasedCamera()
+    {
+        if (cameraFollow == null) return;
+
+        // 获取最大大小档位
+        int maxSize = GetSizeTiers();
+
+        // 计算标准化大小 (0到1之间)
+        float normalizedSize = (float)(CurrentSizeTier - 1) / (maxSize - 1);
+
+        // 使用Lerp映射到Z轴位置 (-5到-10)
+        float targetZ = Mathf.Lerp(-5f, -10f, normalizedSize);
+
+        // 更新摄像机位置
+        Vector3 currentPos = cameraFollow.Camera.transform.position;
+        cameraFollow.Camera.transform.position = new Vector3(currentPos.x, currentPos.y, targetZ);
     }
 }
