@@ -77,8 +77,27 @@ public class Plankton : LivingEntity, IEatable
         {
             rb.useGravity = false; // 禁用重力
             rb.linearDamping = 0.1f; // 很小的线性阻尼，让运动更平滑
-            rb.angularDamping = 3f; // 降低角度阻尼，允许更快转向
+            rb.angularDamping = 4f; // 适中的阻尼，既能防止碰撞旋转又不影响正常转向
             // 保持非Kinematic状态以支持物理力
+
+            // 确保碰撞检测模式为Continuous，避免高速穿透
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
+
+            // 冻结X和Z轴旋转，只允许Y轴旋转（浮游生物只能在XZ平面上转向）
+            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        }
+
+        // 修复Mesh Collider的凸面问题
+        // Unity不允许动态刚体使用凹面网格碰撞器
+        MeshCollider[] meshColliders = GetComponentsInChildren<MeshCollider>();
+        foreach (MeshCollider meshCollider in meshColliders)
+        {
+            if (meshCollider != null && !meshCollider.convex)
+            {
+                meshCollider.convex = true;
+                Debug.Log($"[{gameObject.name}] MeshCollider设置为凸面以支持动态刚体");
+            }
         }
 
         // 初始化材质颜色和 shader

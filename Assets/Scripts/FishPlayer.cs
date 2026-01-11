@@ -160,4 +160,83 @@ public class FishPlayer : FishBase
         return Input.GetKeyUp(KeyCode.X);
 #endif
     }
+
+    // -----------------------------
+    // Wall Collision Detection
+    // -----------------------------
+    private void OnCollisionEnter(Collision collision)
+    {
+        // 使用 bodyCollider 检测墙面碰撞
+        if (bodyCollider != null && collision.collider == bodyCollider)
+        {
+            return; // 忽略自身碰撞
+        }
+
+        // 检查是否是墙面（可以通过标签、层或名称识别）
+        if (IsWall(collision.gameObject))
+        {
+            StopMovement();
+            Debug.Log($"[FishPlayer] 碰到墙面，停止运动: {collision.gameObject.name}");
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // 也可以使用触发器检测墙面
+        if (bodyCollider != null && other == bodyCollider)
+        {
+            return; // 忽略自身碰撞
+        }
+
+        if (IsWall(other.gameObject))
+        {
+            StopMovement();
+            Debug.Log($"[FishPlayer] 碰到墙面（触发器），停止运动: {other.gameObject.name}");
+        }
+    }
+
+    private bool IsWall(GameObject obj)
+    {
+        // 可以根据标签、层或名称来识别墙面
+
+        // 1. 标签检测：支持多种墙面标签
+        if (obj.CompareTag("Wall") || obj.CompareTag("obstacles"))
+        {
+            return true;
+        }
+
+        // 2. 或者根据名称检测
+        if (obj.name.Contains("Wall") || obj.name.Contains("wall") ||
+            obj.name.Contains("Obstacle") || obj.name.Contains("obstacle"))
+        {
+            return true;
+        }
+
+        // 3. 或者根据层检测（检查是否是障碍物层，默认检测所有层）
+        // 这里简单地认为所有不是"Water"或"Default"的层都是墙面
+        int layer = obj.layer;
+        string layerName = LayerMask.LayerToName(layer);
+        if (!string.IsNullOrEmpty(layerName) &&
+            !layerName.Contains("Water") &&
+            !layerName.Contains("Default") &&
+            layer != 0) // 不是默认层
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private void StopMovement()
+    {
+        if (rb != null)
+        {
+            // 停止所有运动
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+
+            // 可选：也可以设置位置到碰撞点前一点距离
+            // 但这里简单地停止运动即可
+        }
+    }
 }

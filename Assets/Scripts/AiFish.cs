@@ -4,33 +4,38 @@ using UnityEngine;
 public abstract class AiFish : FishBase
 {
     [Header("Movement Settings")]
-    [SerializeField] protected float _moveSpeed = 2f;
-    [SerializeField] protected float _turnSpeed = 120f;
-    [SerializeField] protected float _straightMoveTime = 3f;
-    [SerializeField] protected float _randomTurnAngle = 45f;
+    [SerializeField]
+    protected float _moveSpeed = 3f; // 稍微加快移动速度
+
+    [SerializeField]
+    protected float _turnSpeed = 150f; // 稍微加快转向速度
+
+    [SerializeField]
+    protected float _straightMoveTime = 3f;
+
+    [SerializeField]
+    protected float _randomTurnAngle = 45f;
 
     [Header("Sensor Settings")]
-    [SerializeField] protected SphereCollider _senseCollider;
+    [SerializeField]
+    protected SphereCollider _senseCollider;
 
     [Header("Debug")]
-    [SerializeField] protected bool _debugAlwaysActive = false;
-
-    [Header("Rigidbody Settings")]
-    [SerializeField] protected float _linearDamping = 1f;
-    [SerializeField] protected float _angularDamping = 2f;
+    [SerializeField]
+    protected bool _debugAlwaysActive = false;
 
     protected Rigidbody _rb;
     protected float _nextTurnTime;
+
+    // 调试相关变量
+    protected Vector3 _currentTargetPosition = Vector3.zero;
+    protected bool _hasTarget = false;
 
     protected override void Awake()
     {
         base.Awake();
 
         _rb = GetComponent<Rigidbody>();
-
-        _rb.useGravity = false;
-        _rb.linearDamping = _linearDamping;
-        _rb.angularDamping = _angularDamping;
 
         if (_senseCollider != null)
         {
@@ -40,6 +45,12 @@ public abstract class AiFish : FishBase
 
     protected virtual void Start()
     {
+        base.Start();
+
+        // 设置物理阻尼，AI鱼需要更高的角阻尼来减少抖动
+        _rb.linearDamping = 0.1f; // 很小的线性阻尼，让运动更平滑
+        _rb.angularDamping = 100f; // 更高的角阻尼，减少AI鱼的转向抖动
+
         _nextTurnTime = Time.time + Random.Range(1f, _straightMoveTime);
     }
 
@@ -51,6 +62,21 @@ public abstract class AiFish : FishBase
 
     protected void Wander()
     {
+        // 障碍物避障
+        Vector3 avoidanceVelocity = CalculateObstacleAvoidance();
+        if (avoidanceVelocity != Vector3.zero)
+        {
+            // 检测到障碍物时，优先避障
+            // 添加一些随机性，避免所有鱼都往同一个方向避障
+            Vector3 randomizedDirection = avoidanceVelocity.normalized;
+            float randomAngle = Random.Range(-15f, 15f); // 添加±15度的随机偏移
+            randomizedDirection = Quaternion.Euler(0, randomAngle, 0) * randomizedDirection;
+
+            TurnTowardsDirection(randomizedDirection);
+            _rb.AddForce(transform.forward * _moveSpeed, ForceMode.Force);
+            return;
+        }
+
         if (Time.time >= _nextTurnTime)
         {
             // 随机转向：添加随机角度偏移到当前角度
@@ -58,31 +84,25 @@ public abstract class AiFish : FishBase
             float randomAngleOffset = Random.Range(-_randomTurnAngle, _randomTurnAngle);
             float targetAngle = currentAngle + randomAngleOffset;
 
-            // 使用Impulse模式进行快速随机转向
+            // 使用平滑转向代替突然转向
             float angleDifference = Mathf.DeltaAngle(currentAngle, targetAngle);
-            _rb.AddTorque(Vector3.up * angleDifference, ForceMode.Impulse);
+            float smoothedTorque = Mathf.Lerp(0, angleDifference, Time.deltaTime * _turnSpeed);
+            _rb.AddTorque(Vector3.up * smoothedTorque, ForceMode.Force);
 
-            _nextTurnTime = Time.time + Random.Range(1f, _straightMoveTime);
+            _nextTurnTime = Time.time + Random.Range(0.5f, _straightMoveTime * 0.6f); // 更频繁地转向
         }
 
         _rb.AddForce(transform.forward * _moveSpeed, ForceMode.Force);
     }
 
-    protected void ApplyMovement()
+    protected virtual void ApplyMovement()
     {
-        if (_rb.linearVelocity.magnitude > _moveSpeed * 2f)
-        {
-            _rb.linearVelocity = _rb.linearVelocity.normalized * _moveSpeed * 2f;
-        }
-
-        if (_rb.angularVelocity.magnitude > _turnSpeed * 2f)
-        {
-            _rb.angularVelocity = _rb.angularVelocity.normalized * _turnSpeed * 2f;
-        }
+        // 子类可以重写此方法来添加自定义的移动逻辑
+        // 现在不再通过代码调节Rigidbody属性
     }
 
     /// <summary>
-    /// 统一的物理转向方法，使用AddTorque进行转向
+    /// 统一的物理转向方法，使用AddTorque进行转向（平滑过渡版本）
     /// </summary>
     /// <param name="targetAngle">目标角度（度）</param>
     /// <param name="turnSpeedMultiplier">转向速度倍数，默认1.0f</param>
@@ -91,11 +111,13 @@ public abstract class AiFish : FishBase
         float currentAngle = _rb.rotation.eulerAngles.y;
         float angleDifference = Mathf.DeltaAngle(currentAngle, targetAngle);
 
-        // 使用与Plankton一致的转向逻辑
-        float maxTorque = _turnSpeed * turnSpeedMultiplier;
-        float torque = Mathf.Clamp(angleDifference, -maxTorque, maxTorque);
-
-        _rb.AddTorque(Vector3.up * torque, ForceMode.Force);
+        // 使用Lerp进行平滑过渡，避免突然转向
+        float smoothedTorque = Mathf.Lerp(
+            0,
+            angleDifference,
+            Time.deltaTime * _turnSpeed * turnSpeedMultiplier
+        );
+        _rb.AddTorque(Vector3.up * smoothedTorque, ForceMode.Force);
     }
 
     /// <summary>
@@ -115,7 +137,14 @@ public abstract class AiFish : FishBase
 
     protected void MoveTowardsTarget(Transform target)
     {
-        if (target == null) return;
+        if (target == null)
+        {
+            _hasTarget = false;
+            return;
+        }
+
+        _currentTargetPosition = target.position;
+        _hasTarget = true;
 
         Vector3 directionToTarget = (target.position - transform.position);
         float distance = directionToTarget.magnitude;
@@ -125,16 +154,44 @@ public abstract class AiFish : FishBase
             // 使用统一的转向方法
             TurnTowardsDirection(directionToTarget, 2.0f);
             _rb.AddForce(transform.forward * _moveSpeed * 1.5f, ForceMode.Force);
+
+            // 限制速度，防止过度加速
+            _rb.linearVelocity = Vector3.ClampMagnitude(_rb.linearVelocity, _moveSpeed * 2f);
         }
         else
         {
-            _rb.linearVelocity *= 0.5f;
+            _rb.linearVelocity *= 0.5f; // 减速
+            _hasTarget = false;
         }
+    }
+
+    /// <summary>
+    /// 增强感知系统：检测物体进入感知区域
+    /// </summary>
+    protected virtual void OnTriggerEnter(Collider other)
+    {
+        // 子类可以重写此方法来实现具体的感知行为
+        // 例如：检测食物、捕食者或其他感兴趣的目标
+
+        // 默认情况下，AI鱼类不主动追逐其他IEatable对象
+        // 由子类（如VegFish、MeatFish）决定追逐什么
+    }
+
+    /// <summary>
+    /// 持续检测物体在感知区域内
+    /// </summary>
+    protected virtual void OnTriggerStay(Collider other)
+    {
+        // 子类可以重写此方法来实现持续的感知行为
+
+        // 默认情况下，AI鱼类不主动追逐其他IEatable对象
+        // 由子类决定追逐什么
     }
 
     protected virtual void OnDrawGizmosSelected()
     {
-        if (!Application.isPlaying) return;
+        if (!Application.isPlaying)
+            return;
 
         Gizmos.color = Color.green;
         if (_senseCollider != null)
@@ -151,5 +208,23 @@ public abstract class AiFish : FishBase
 
         Gizmos.color = Color.blue;
         Gizmos.DrawRay(transform.position, transform.forward * 2f);
+
+        // 绘制当前速度向量
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawRay(transform.position, _rb.linearVelocity.normalized * 2f);
+
+        // 绘制当前目标位置
+        if (_hasTarget)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(_currentTargetPosition, 0.5f);
+            Gizmos.DrawLine(transform.position, _currentTargetPosition);
+        }
+
+        // 绘制转向角度指示器
+        Gizmos.color = Color.cyan;
+        Vector3 turnIndicator =
+            Quaternion.Euler(0, _rb.rotation.eulerAngles.y, 0) * Vector3.forward;
+        Gizmos.DrawRay(transform.position, turnIndicator * 1.5f);
     }
 }

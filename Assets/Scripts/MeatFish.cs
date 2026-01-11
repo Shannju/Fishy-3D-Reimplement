@@ -12,6 +12,7 @@ public class MeatFish : AiFish
     {
         base.Awake();
         SetSpecies(SpeciesId.MeatFish);
+        enableObstacleAvoidance = true; // 启用障碍物避障
     }
 
     protected override void Update()
@@ -63,6 +64,23 @@ public class MeatFish : AiFish
         _isEating = false;
     }
 
+
+    /// <summary>
+    /// MeatFish 对其他鱼类感兴趣（作为潜在食物）
+    /// </summary>
+    protected override void OnTriggerStay(Collider other)
+    {
+        // 对其他鱼类做出反应（作为潜在食物）
+        FishBase fish = other.GetComponentInParent<FishBase>();
+        if (fish != null && fish.IsAlive)
+        {
+            // 只有比自己小的鱼类才会追逐
+            if (CanEatFish(fish))
+            {
+                MoveTowardsTarget(other.transform);
+            }
+        }
+    }
 
     protected override void OnDrawGizmosSelected()
     {

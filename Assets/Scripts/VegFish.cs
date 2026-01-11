@@ -11,13 +11,14 @@ public class VegFish : AiFish
 
     private float _nextFeedTime;
     private Transform _targetAlgae;
-    private bool _isFeeding = true;
+    private bool _isFeeding = false; // 默认不处于觅食状态，让它主动寻找
     private bool _isEating = false;
 
     protected override void Awake()
     {
         base.Awake();
         SetSpecies(SpeciesId.VegFish);
+        enableObstacleAvoidance = true; // 启用障碍物避障
     }
 
     private void Start()
@@ -39,6 +40,19 @@ public class VegFish : AiFish
         else
         {
             base.Update(); // Call base Update for wandering behavior
+        }
+    }
+
+    /// <summary>
+    /// VegFish 只对 Algae 感兴趣
+    /// </summary>
+    protected override void OnTriggerStay(Collider other)
+    {
+        // 只对海藻做出反应
+        Algae algae = other.GetComponentInParent<Algae>();
+        if (algae != null && algae.IsAlive)
+        {
+            MoveTowardsTarget(other.transform);
         }
     }
 
@@ -68,6 +82,9 @@ public class VegFish : AiFish
     private void DetectAlgae()
     {
         if (Time.time < _nextFeedTime) return;
+
+        // 更频繁地检查海藻，避免长时间随机游动
+        _nextFeedTime = Time.time + Random.Range(0.3f, 1.0f); // 0.3-1.0秒间隔，更频繁检查
 
         Transform closestAlgae = null;
         float closestDistance = float.MaxValue;
