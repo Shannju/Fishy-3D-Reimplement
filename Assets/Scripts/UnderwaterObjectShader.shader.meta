@@ -1,0 +1,48 @@
+fileFormatVersion: 2
+guid: b4c5d6e7f8a901234567890123def23
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData:
+  executionModel: 1
+  shaderModel: 0
+  shaderCompilerTargets: []
+  shaderCompilerPlatform: []
+  shaderKeywordPrefixes: []
+  shaderKeywordSet: {}
+  shaderKeywordReset: {}
+  shaderKeywords: []
+  shaderSnippets: []
+  shaderSnippetDeps: []
+  shaderSnippetOverrides: []
+  shaderSnippetDepsOverrides: []
+  shaderLabHasTangentInput: 0
+  shaderLabHasBitangentInput: 0
+  shaderLabHasNormalInput: 0
+  shaderLabHasTexCoord0Input: 0
+  shaderLabHasTexCoord1Input: 0
+  shaderLabHasTexCoord2Input: 0
+  shaderLabHasTexCoord3Input: 0
+  shaderLabHasColorInput: 0
+  shaderLabHasFogInput: 0
+  shaderLabHasVertexIdInput: 0
+  shaderLabHasInstanceIdInput: 0
+  shaderLabHasCustomInputs: 0
+  shaderLabHasFragmentCoordInput: 0
+  shaderLabHasFrontFacingInput: 0
+  shaderLabHasVertexIndexInput: 0
+  shaderLabHasInstanceIndexInput: 0
+  shaderLabHasCustomVaryings: 0
+  shaderModel: 0
+  shaderCompilerTargets: []
+  shaderCompilerPlatform: []
+  shaderKeywordPrefixes: []
+  shaderKeywordSet: {}
+  shaderKeywordReset: {}
+  shaderKeywords: []
+  shaderSnippets: []
+  shaderSnippetDeps: []
+  shaderSnippetOverrides: []
+  shaderSnippetDepsOverrides: []
+  executionModel: 1

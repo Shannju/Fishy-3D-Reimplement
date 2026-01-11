@@ -10,6 +10,10 @@ public class Algae : SizeableEntity, IEatable
     [Tooltip("缩放与剩余口数关联（根据剩余口数设置档位）")]
     [SerializeField] private bool scaleWithUnits = true;
 
+    [Header("Visual")]
+    [Tooltip("视觉子物体（用于隐藏显示）")]
+    [SerializeField] private GameObject visualObject;
+
     [Header("Regeneration")]    
     [Tooltip("恢复到 totalUnits 所需的时间（秒）")]
     [SerializeField] private float regenerationTime = 5f;
@@ -21,12 +25,28 @@ public class Algae : SizeableEntity, IEatable
     private Coroutine _regenerationCoroutine;
 
     public int UnitsRemaining => _unitsRemaining;
-    public bool IsDepleted => _unitsRemaining <= 0;
+    public bool IsDepleted => false; // 藻可以被无限吃，不会被耗尽
 
     protected override void Awake()
     {
         base.Awake();
         _unitsRemaining = Mathf.Max(0, totalUnits);
+
+        // 如果没有手动指定visualObject，尝试自动查找
+        if (visualObject == null)
+        {
+            // 查找名为"Visual"的子物体
+            Transform visualTransform = transform.Find("Visual");
+            if (visualTransform != null)
+            {
+                visualObject = visualTransform.gameObject;
+            }
+            else
+            {
+                // 如果找不到Visual子物体，使用自身作为视觉对象
+                visualObject = gameObject;
+            }
+        }
     }
 
     private void OnDestroy()
@@ -53,7 +73,7 @@ public class Algae : SizeableEntity, IEatable
 
     public bool ConsumeOneUnit()
     {
-        if (IsDepleted) return false;
+        if (_unitsRemaining <= 0) return false;
 
         _unitsRemaining -= 1;
         UpdateVisual();
@@ -94,9 +114,12 @@ public class Algae : SizeableEntity, IEatable
             
             // 根据进度计算应该恢复到的单位数
             int targetUnits = Mathf.RoundToInt(Mathf.Lerp(startUnits, totalUnits, progress));
-            
-            // 只有当目标单位数增加时才更新
-            if (targetUnits > _unitsRemaining)
+
+            // 检查是否需要更新（目标单位数增加，或者从<=0恢复到>0）
+            bool shouldUpdate = targetUnits > _unitsRemaining ||
+                               (_unitsRemaining <= 0 && targetUnits > 0);
+
+            if (shouldUpdate)
             {
                 _unitsRemaining = targetUnits;
                 UpdateVisual();
@@ -116,14 +139,20 @@ public class Algae : SizeableEntity, IEatable
 
     private void UpdateVisual()
     {
-        if (!scaleWithUnits || totalUnits <= 0)
+        // 处理视觉子物体的显示/隐藏
+        if (visualObject != null)
         {
-            // 如果不缩放或没有单位，保持当前档位
+            visualObject.SetActive(_unitsRemaining > 0);
+        }
+
+        if (!scaleWithUnits || totalUnits <= 0 || _unitsRemaining <= 0)
+        {
+            // 如果不缩放、没有单位或已被吃光，保持当前档位或不应用缩放
             return;
         }
 
         // 根据剩余口数计算档位（剩余口数就是档位）
-        int targetTier = Mathf.Max(1, _unitsRemaining);
+        int targetTier = _unitsRemaining;
         ApplySizeTier(targetTier);
     }
 }
