@@ -20,8 +20,8 @@
                 {
                     "name": "",
                     "id": "41a19da1-b8ee-42be-9d10-dff8dcc43ef9",
-                    "path": "<Keyboard>/escape",
-                    "interactions": "",
+                    "path": "<Keyboard>/anyKey",
+                    "interactions": "Press",
                     "processors": "",
                     "groups": "",
                     "action": "ToggleMenu",

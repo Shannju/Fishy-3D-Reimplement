@@ -7,24 +7,25 @@ public class UIManager : MonoBehaviour
     // 用于控制显示的 UI 面板
     public GameObject menuPanel;
 
-    // 创建一个 InputAction 变量
-    private InputAction escapeAction;
+    void Update()
+    {
+        // 检测空格键、回车键和ESC键按下
+        if (Keyboard.current != null &&
+            (Keyboard.current.spaceKey.wasPressedThisFrame ||
+             Keyboard.current.enterKey.wasPressedThisFrame ||
+             Keyboard.current.escapeKey.wasPressedThisFrame))
+        {
+            ToggleMenu();
+        }
+    }
 
     void OnEnable()
     {
-        // 绑定 InputAction，确保这个操作会在启用时被捕捉
-        escapeAction = new InputAction("ToggleMenu", binding: "<Keyboard>/escape");
-        escapeAction.performed += ctx => ToggleMenu();
-        escapeAction.Enable();
+        // 不再需要InputAction，改为在Update中检测任意键
     }
 
-    void OnDisable()
-    {
-        // 在禁用时清除绑定
-        escapeAction.Disable();
-    }
 
-    // 处理 ESC 键的按下事件，切换菜单显示
+    // 处理空格键、回车键和ESC键的按下事件，切换菜单显示
     private void ToggleMenu()
     {
         if (menuPanel != null)
