@@ -8,7 +8,7 @@ public abstract class AiFish : FishBase
     protected float _moveSpeed = 3f; // 稍微加快移动速度
 
     [SerializeField]
-    protected float _turnSpeed = 150f; // 稍微加快转向速度
+    protected float _turnSpeed = 10f   ;//微加快转向速度
 
     [SerializeField]
     protected float _straightMoveTime = 3f;
@@ -48,8 +48,8 @@ public abstract class AiFish : FishBase
         base.Start();
 
         // 设置物理阻尼，AI鱼需要更高的角阻尼来减少抖动
-        _rb.linearDamping = 0.1f; // 很小的线性阻尼，让运动更平滑
-        _rb.angularDamping = 100f; // 更高的角阻尼，减少AI鱼的转向抖动
+        _rb.linearDamping = 0.5f; // 很小的线性阻尼，让运动更平滑
+        _rb.angularDamping = 200f;// 更高的角阻尼，减少AI鱼的转向抖动
 
         _nextTurnTime = Time.time + Random.Range(1f, _straightMoveTime);
     }
@@ -80,14 +80,12 @@ public abstract class AiFish : FishBase
         if (Time.time >= _nextTurnTime)
         {
             // 随机转向：添加随机角度偏移到当前角度
-            float currentAngle = _rb.rotation.eulerAngles.y;
+            float currentAngle = transform.eulerAngles.y;
             float randomAngleOffset = Random.Range(-_randomTurnAngle, _randomTurnAngle);
             float targetAngle = currentAngle + randomAngleOffset;
 
-            // 使用平滑转向代替突然转向
-            float angleDifference = Mathf.DeltaAngle(currentAngle, targetAngle);
-            float smoothedTorque = Mathf.Lerp(0, angleDifference, Time.deltaTime * _turnSpeed);
-            _rb.AddTorque(Vector3.up * smoothedTorque, ForceMode.Force);
+            // 使用统一的转向方法，避免抖动
+            TurnTowardsAngle(targetAngle);
 
             _nextTurnTime = Time.time + Random.Range(0.5f, _straightMoveTime * 0.6f); // 更频繁地转向
         }
@@ -102,7 +100,7 @@ public abstract class AiFish : FishBase
     }
 
     /// <summary>
-    /// 统一的物理转向方法，使用AddTorque进行转向（平滑过渡版本）
+    /// 统一的物理转向方法，直接设置rotation避免抖动
     /// </summary>
     /// <param name="targetAngle">目标角度（度）</param>
     /// <param name="turnSpeedMultiplier">转向速度倍数，默认1.0f</param>
@@ -111,13 +109,14 @@ public abstract class AiFish : FishBase
         float currentAngle = _rb.rotation.eulerAngles.y;
         float angleDifference = Mathf.DeltaAngle(currentAngle, targetAngle);
 
-        // 使用Lerp进行平滑过渡，避免突然转向
-        float smoothedTorque = Mathf.Lerp(
-            0,
+        // 直接计算新角度，避免AddTorque导致的抖动
+        float newAngle = currentAngle + Mathf.Clamp(
             angleDifference,
-            Time.deltaTime * _turnSpeed * turnSpeedMultiplier
-        );
-        _rb.AddTorque(Vector3.up * smoothedTorque, ForceMode.Force);
+            -_turnSpeed * Time.fixedDeltaTime * turnSpeedMultiplier,
+            _turnSpeed * Time.fixedDeltaTime * turnSpeedMultiplier);
+
+        // 直接设置rotation，更加稳定
+        transform.rotation = Quaternion.Euler(0f, newAngle, 0f);
     }
 
     /// <summary>

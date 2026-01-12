@@ -10,10 +10,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float maxSpeed = 5f;     // 最大速度
     [SerializeField] private float accel = 8f;        // 加速度，越大越快启动
     [SerializeField] private float decel = 10f;       // 减速度，越大越容易停下来
-    [SerializeField] private float lateralDamping = 4f; // 侧向阻尼（越大越容易抓地，越小越容易甩尾）
+    [SerializeField] private float lateralDamping = 10f; // 侧向阻尼（越大越容易抓地，越小越容易甩尾）
 
     [Header("Turning")]
-    [SerializeField] private float turnSpeed = 720f;  // 度/秒（越小转弯半径越大）
+    [SerializeField] private float turnSpeed = 720f;  // 度/秒（基础转向速度）
+    [SerializeField] private float turnAcceleration = 1800f; // 度/秒²（转向加速度，越小转向越平滑）
+    [SerializeField] private float turnDamping = 15f; // 转向阻尼（越大越容易停下）
 
     [Header("Debug")]
     [SerializeField] private bool debugLog = true;
@@ -33,6 +35,9 @@ public class PlayerController : MonoBehaviour
     private float currentLerpVal;
     private Vector2 move; // x,y
 
+    // 转向控制
+    private float currentAngularVelocity; // 当前角速度
+
     private void Reset()
     {
         rb = GetComponent<Rigidbody>();
@@ -44,7 +49,7 @@ public class PlayerController : MonoBehaviour
 
         // 确保Rigidbody物理设置正确
         rb.useGravity = false;
-        rb.angularDamping = 200f;  // 参考AiFish实现，增加角阻尼防止静止时转向
+        rb.angularDamping = turnDamping;   // 使用可调节的转向阻尼
 
         // 确保碰撞检测模式为Continuous，避免高速穿透
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
@@ -176,7 +181,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// 转向指定角度
+    /// 转向指定角度（带阻尼控制）
     /// </summary>
     /// <param name="targetAngle">目标角度（度）</param>
     private void TurnTowardsAngle(float targetAngle)
@@ -184,14 +189,21 @@ public class PlayerController : MonoBehaviour
         // 获取当前角度
         float currentAngle = transform.eulerAngles.y;
 
-        // 计算角度差
+        // 计算角度差（-180到180度之间）
         float angleDifference = Mathf.DeltaAngle(currentAngle, targetAngle);
 
-        // 计算新的角度（使用 turnSpeed 控制转向速度）
-        float newAngle = currentAngle + Mathf.Clamp(
-            angleDifference,
-            -turnSpeed * Time.fixedDeltaTime,
-            turnSpeed * Time.fixedDeltaTime);
+        // 计算目标角速度（基于角度差）
+        float targetAngularVelocity = angleDifference * turnAcceleration * Time.fixedDeltaTime;
+
+        // 限制最大角速度
+        targetAngularVelocity = Mathf.Clamp(targetAngularVelocity, -turnSpeed, turnSpeed);
+
+        // 应用阻尼（模拟物理阻尼）
+        currentAngularVelocity = Mathf.Lerp(currentAngularVelocity, targetAngularVelocity,
+            turnDamping * Time.fixedDeltaTime);
+
+        // 计算新的角度
+        float newAngle = currentAngle + currentAngularVelocity * Time.fixedDeltaTime;
 
         // 设置新的旋转
         transform.rotation = Quaternion.Euler(0f, newAngle, 0f);
